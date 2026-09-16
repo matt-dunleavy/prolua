@@ -10,13 +10,13 @@ Prolua is a complete Lua-inspired runtime and toolchain built to deliver modern 
 
 The baseline language is Lua 5.4, and the support is verified rather than simply asserted: every observable behaviour is compared byte for byte with the reference implementation, Lua 5.4.8, the official test suite passes, and real projects such as Fennel and the Teal compiler run their own test suites under Prolua with the reference's output. Existing Lua code runs as is.
 
-| | |
-| --- | --- |
-| Version | 0.1.0 (`prolua --version`) |
-| Language | Lua 5.4, matched byte for byte against Lua 5.4.8 |
+|                |                                                              |
+| -------------- | ------------------------------------------------------------ |
+| Version        | 0.1.0 (`prolua --version`)                                   |
+| Language       | Lua 5.4, matched byte for byte against Lua 5.4.8             |
 | Implementation | Zig 0.16.0, links libc, no other dependencies; a single binary |
-| Platforms | Linux (every suite), macOS (unit, differential and command-line suites in CI), Windows (build, unit tests and a smoke run in CI); cross-compiles for `x86_64-windows-gnu`, `aarch64-macos`, `x86_64-linux-musl` and `aarch64-linux-gnu` |
-| License | MIT |
+| Platforms      | Linux (every suite), macOS (unit, differential and command-line suites in CI), Windows (build, unit tests and a smoke run in CI); cross-compiles for `x86_64-windows-gnu`, `aarch64-macos`, `x86_64-linux-musl` and `aarch64-linux-gnu` |
+| License        | MIT                                                          |
 
 ## What you get
 
@@ -38,7 +38,7 @@ sudo scripts/install.sh              # into /usr/local/bin
 
 mkdir hello && cd hello
 prolua init github.com/you/hello     # module.toml and src/main.lua
-prolua add github.com/matt-dunleavy/json  # fetch the latest release, write module.toml and module.sum
+prolua add github.com/luasuite/json  # fetch the latest release, write module.toml and module.sum
 prolua run                           # runs src/main.lua
 prolua test                          # runs tests/*_test.lua once you have written one
 ```
@@ -46,7 +46,7 @@ prolua test                          # runs tests/*_test.lua once you have writt
 Inside `src/main.lua`:
 
 ```lua
-local json = require "github.com/matt-dunleavy/json"
+local json = require "github.com/luasuite/json"
 print(json.encode { hello = "world" })
 ```
 
@@ -90,7 +90,7 @@ version = "v0.1.0"
 prolua = ">=0.1.0"
 
 [dependencies]
-"github.com/matt-dunleavy/json" = "v0.1.0"
+"github.com/luasuite/json" = "v0.1.0"
 ```
 
 A module is named by its import path, `<host>/<owner>/<repo>[/<dir>]`, and a package inside it is a further path: `require "github.com/you/lib/client"` loads `src/client.lua` or `src/client/init.lua` from the `lib` module. A package with an `internal` component loads only from files inside its own module.
@@ -109,13 +109,13 @@ A module is named by its import path, `<host>/<owner>/<repo>[/<dir>]`, and a pac
 
 Prolua runs Lua 5.4 as the reference implements it and that is tested rather than asserted:
 
-| Suite | What it checks |
-| --- | --- |
-| `test/diff` + `test/lua54` (55 scripts) | Output compared byte for byte with Lua 5.4.8: values, `tostring`, `string.format`, error messages and tracebacks, `string.dump` round-trips, both collector modes, `io` and `os`, `popen`, `warn`, the limits |
+| Suite                                     | What it checks                                               |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| `test/diff` + `test/lua54` (55 scripts)   | Output compared byte for byte with Lua 5.4.8: values, `tostring`, `string.format`, error messages and tracebacks, `string.dump` round-trips, both collector modes, `io` and `os`, `popen`, `warn`, the limits |
 | `test/puc` (the official Lua 5.4.8 suite) | 30 of 30 runnable files in portable mode (`all`, `main` and `heavy` drive the suite or allocate until killed and are never run) |
-| `test/corpus` (8 real projects) | json.lua, dkjson, serpent, luaunit, lunajson, LuaMinify, Fennel and tl at pinned commits, their own tests under both interpreters; output and exit status must match |
-| `test/cli` (209 cases) | The command line, projects, every dependency command against a `file://` forge, read-only directories, symbolic links, Ctrl-C |
-| `test/fuzz` (9 targets) | Mutation fuzzing of source, the binary loader (byte-level and structural), patterns, `format`, `pack`, numerals, `utf8` and module paths, on the ReleaseSafe build, with outcomes diffed against the reference where it has the feature |
+| `test/corpus` (8 real projects)           | json.lua, dkjson, serpent, luaunit, lunajson, LuaMinify, Fennel and tl at pinned commits, their own tests under both interpreters; output and exit status must match |
+| `test/cli` (209 cases)                    | The command line, projects, every dependency command against a `file://` forge, read-only directories, symbolic links, Ctrl-C |
+| `test/fuzz` (9 targets)                   | Mutation fuzzing of source, the binary loader (byte-level and structural), patterns, `format`, `pack`, numerals, `utf8` and module paths, on the ReleaseSafe build, with outcomes diffed against the reference where it has the feature |
 
 Where the two disagree the reference wins, and the differential suite's `known_diff` table is empty. The command line and the module system are Prolua's own design and have no reference; their expectations are pinned in the tree.
 
@@ -123,17 +123,17 @@ Where the two disagree the reference wins, and the differential suite's `known_d
 
 Every row was run on this date on Linux against the installed Lua 5.4.8, with Zig 0.16.0:
 
-| Suite | Command | Result |
-| --- | --- | --- |
-| Unit tests (leaf modules, runtime, command line) | `zig build test-unit` | 267 of 267 pass |
-| Differential, Debug build | `zig build test-diff` | 55 pass, 0 fail, 0 known-different |
-| Differential, ReleaseSafe build | `zig build test-diff-safe` | 55 pass, 0 fail |
-| Command line | `zig build test-cli` | 209 pass, 0 fail |
-| Official Lua 5.4.8 suite | `zig build test-puc` | 30 pass, 0 unexpected failures |
-| Real-program corpus | `zig build test-corpus` | 8 of 8 projects match the reference |
-| Fuzzing, 2000 cases per target | `zig build fuzz -- all 2000 1` | 9 of 9 targets, no crash |
-| Command line under valgrind | `zig build test-cli-valgrind` | 205 pass, 0 fail, no memory errors, no definite leaks (the memory-limit cases are not run under it) |
-| Official suite under valgrind | `zig build test-puc-valgrind` | 30 pass, no memory errors |
+| Suite                                            | Command                        | Result                                                       |
+| ------------------------------------------------ | ------------------------------ | ------------------------------------------------------------ |
+| Unit tests (leaf modules, runtime, command line) | `zig build test-unit`          | 267 of 267 pass                                              |
+| Differential, Debug build                        | `zig build test-diff`          | 55 pass, 0 fail, 0 known-different                           |
+| Differential, ReleaseSafe build                  | `zig build test-diff-safe`     | 55 pass, 0 fail                                              |
+| Command line                                     | `zig build test-cli`           | 209 pass, 0 fail                                             |
+| Official Lua 5.4.8 suite                         | `zig build test-puc`           | 30 pass, 0 unexpected failures                               |
+| Real-program corpus                              | `zig build test-corpus`        | 8 of 8 projects match the reference                          |
+| Fuzzing, 2000 cases per target                   | `zig build fuzz -- all 2000 1` | 9 of 9 targets, no crash                                     |
+| Command line under valgrind                      | `zig build test-cli-valgrind`  | 205 pass, 0 fail, no memory errors, no definite leaks (the memory-limit cases are not run under it) |
+| Official suite under valgrind                    | `zig build test-puc-valgrind`  | 30 pass, no memory errors                                    |
 
 The same suites run in CI on every push (`.github/workflows/ci.yml`), plus the macOS and Windows jobs and the four cross-compiles.
 
@@ -141,20 +141,20 @@ The same suites run in CI on every push (`.github/workflows/ci.yml`), plus the m
 
 `prolua bench` times each script in `test/bench` as a whole process under Prolua and under the reference interpreter, best of three runs. Measured on 2026-09-12 with `zig build bench -Doptimize=ReleaseFast` against the installed Lua 5.4.8:
 
-| Script | prolua | lua | ratio |
-| --- | --- | --- | --- |
-| binarytrees | 0.449 s | 0.443 s | 1.01× |
-| closures | 0.494 s | 0.479 s | 1.03× |
-| coroutines | 0.158 s | 0.192 s | 0.82× |
-| fannkuch | 1.734 s | 1.716 s | 1.01× |
-| fib | 0.055 s | 0.054 s | 1.01× |
-| json | 0.521 s | 0.455 s | 1.15× |
-| loops | 0.375 s | 0.521 s | 0.72× |
-| nbody | 0.612 s | 0.686 s | 0.89× |
-| sort | 0.250 s | 0.418 s | 0.60× |
+| Script       | prolua  | lua     | ratio |
+| ------------ | ------- | ------- | ----- |
+| binarytrees  | 0.449 s | 0.443 s | 1.01× |
+| closures     | 0.494 s | 0.479 s | 1.03× |
+| coroutines   | 0.158 s | 0.192 s | 0.82× |
+| fannkuch     | 1.734 s | 1.716 s | 1.01× |
+| fib          | 0.055 s | 0.054 s | 1.01× |
+| json         | 0.521 s | 0.455 s | 1.15× |
+| loops        | 0.375 s | 0.521 s | 0.72× |
+| nbody        | 0.612 s | 0.686 s | 0.89× |
+| sort         | 0.250 s | 0.418 s | 0.60× |
 | spectralnorm | 0.517 s | 0.435 s | 1.19× |
-| strings | 0.247 s | 0.208 s | 1.19× |
-| tables | 0.673 s | 0.674 s | 1.00× |
+| strings      | 0.247 s | 0.208 s | 1.19× |
+| tables       | 0.673 s | 0.674 s | 1.00× |
 
 ## Embedding
 
