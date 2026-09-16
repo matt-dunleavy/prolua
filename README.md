@@ -1,4 +1,4 @@
-![](/home/mattdunleavy/Documents/repo/github.com/matt-dunleavy/prolua/docs/logo.png)
+![](docs/logo.png)
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)[![ci](https://github.com/matt-dunleavy/rustline/actions/workflows/ci.yml/badge.svg)](https://github.com/matt-dunleavy/prolua/actions/workflows/ci.yml)[![Discord](https://img.shields.io/badge/discord-chat-green?logo=discord)](https://discord.gg/dFXhpQcQ7u)[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40matthewdunleavy)](https://twitter.com/matthewdunleavy)
 
