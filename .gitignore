@@ -1,0 +1,24 @@
+# Build output
+.zig-cache/
+zig-cache/
+zig-out/
+
+# Editors and operating systems
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Written by the test harnesses: the corpus clones its projects into
+# .cache/, the official suite writes timing files, the fuzzer saves
+# reproducers, and the harnesses log locally
+.cache/
+test/puc/time*.txt
+test/fuzz/crashes/
+*.log
+
+# Editor line-count reports
+.VSCodeCounter/

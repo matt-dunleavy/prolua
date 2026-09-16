@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/matt-dunleavy/prolua/blob/master/.github/SECURITY.md
+    about: Do not open a public issue. The security policy says where to send the report.
+  - name: Support
+    url: https://github.com/matt-dunleavy/prolua/blob/master/.github/SUPPORT.md
+    about: Where to get help and what to include in a report.

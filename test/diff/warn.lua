@@ -1,0 +1,11 @@
+-- warn: control messages, pieces, and the state of the switch
+warn("hidden")
+warn("@on")
+warn("a", "b", "c")
+warn("@unknown")
+warn("single")
+warn("@off")
+warn("hidden again")
+warn("@on")
+warn("visible", " again")
+print(pcall(warn), pcall(warn, 1), pcall(warn, "x", {}))

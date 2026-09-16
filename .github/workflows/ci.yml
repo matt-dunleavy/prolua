@@ -1,0 +1,101 @@
+# Every suite the tree has, on every push and pull request.
+#
+# linux:   the full set against a reference Lua 5.4.8 built from source (the
+#          differential and corpus harnesses compare output byte for byte,
+#          so the reference version matters).
+# macos:   build, unit, differential and CLI suites, the differential against a reference built
+#          the same way.
+# windows: build and unit tests only; there is no reference interpreter and
+#          io.popen on Windows has never been run (docs/project/project.md 1.3).
+# cross:   the targets the tree is known to compile for stay compiling.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  ZIG_VERSION: 0.16.0
+  LUA_VERSION: 5.4.8
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+      - name: Cache the reference interpreter
+        id: lua-cache
+        uses: actions/cache@v4
+        with:
+          path: lua-${{ env.LUA_VERSION }}
+          key: lua-${{ env.LUA_VERSION }}-linux
+      - name: Build the reference interpreter
+        if: steps.lua-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz | tar xz
+          make -C lua-${LUA_VERSION} linux -j2
+      - name: Install the reference interpreter
+        run: sudo make -C lua-${LUA_VERSION} install && lua -v
+      - name: Format check
+        run: zig fmt --check src build.zig examples
+      - name: Unit, differential (Debug and ReleaseSafe) and command-line suites
+        run: zig build test-all
+      - name: Official Lua 5.4.8 test suite
+        run: zig build test-puc
+      - name: Real-program corpus
+        run: zig build test-corpus
+      - name: Fuzz smoke (every target, 300 cases, fixed seed)
+        run: zig build fuzz -- all 300 1
+      - name: Benchmarks build (ReleaseFast) and run once
+        run: zig build bench -Doptimize=ReleaseFast -- fib loops
+      - name: Embedding example
+        run: zig build example
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+      - name: Build and install the reference interpreter
+        run: |
+          curl -sSL https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz | tar xz
+          make -C lua-${LUA_VERSION} macosx -j2
+          sudo make -C lua-${LUA_VERSION} install && lua -v
+      - name: Unit, differential and command-line suites
+        run: zig build test-all
+
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+      - name: Build
+        run: zig build
+      - name: Unit tests
+        run: zig build test-unit
+      - name: Smoke
+        shell: bash
+        run: |
+          ./zig-out/bin/prolua.exe --version
+          ./zig-out/bin/prolua.exe run -e 'local t = {} for i = 1, 10 do t[#t + 1] = i * i end print(table.concat(t, ","), 2^53, math.maxinteger, ("x"):rep(3), os.time() > 0)'
+          ./zig-out/bin/prolua.exe run test/bench/fib.lua
+
+  cross:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        target: [x86_64-windows-gnu, aarch64-macos, x86_64-linux-musl, aarch64-linux-gnu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: ${{ env.ZIG_VERSION }}
+      - name: Cross-compile for ${{ matrix.target }}
+        run: zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseSafe

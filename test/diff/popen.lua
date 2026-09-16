@@ -1,0 +1,16 @@
+-- io.popen: reading, writing, exit status, signals, modes and collection
+local f = assert(io.popen("echo hello; echo world", "r"))
+print(io.type(f))
+for l in f:lines() do print("got", l) end
+print(f:close())
+print(io.type(f))
+local g = assert(io.popen("cat > /dev/null; exit 3", "w"))
+g:write("abc\n")
+print(g:close())
+local h = io.popen("kill -9 $$")
+print(h:read("a"), h:close())
+print(pcall(io.popen, "true", "x"))
+local k = io.popen("printf 'a\\nb\\n'"); print(k:read("l"), k:read("n"), k:read("a"))
+k = nil; collectgarbage()
+local w = io.popen("wc -c", "w") w:write(string.rep("z", 1000)) print(w:close())
+print("done")

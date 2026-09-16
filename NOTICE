@@ -1,0 +1,51 @@
+Prolua
+Copyright (c) 2024-2026 Matt Dunleavy.
+
+Licensed under the Apache License 2.0. See the LICENSE file for the full
+license text of this software.
+
+--------------------------------------------------------------------------
+
+This product is an independent implementation of the Lua programming
+language. It is not the official Lua implementation and is not affiliated
+with Lua.org or PUC-Rio. The source code in src/ contains no code from the
+official Lua distribution.
+
+The directory test/puc/ contains the official Lua 5.4.8 test suite
+(lua-5.4.8-tests), which is Copyright (c) 1994-2026 Lua.org, PUC-Rio and
+is distributed under the MIT license reproduced below. It is used
+unmodified to verify this implementation and is not part of the prolua
+binary.
+
+Lua has been designed, implemented, and maintained at the Pontifical
+Catholic University of Rio de Janeiro (PUC-Rio) in Brazil since 1993 by:
+
+    Roberto Ierusalimschy
+    Waldemar Celes
+    Luiz Henrique de Figueiredo
+
+The following notice is reproduced as requested by the Lua license
+(https://www.lua.org/copyright.html):
+
+Copyright © 1994–2026 Lua.org, PUC-Rio.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+See ATTRIBUTION.md for further acknowledgments.

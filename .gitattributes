@@ -1,0 +1,6 @@
+* text=auto
+*.zig text eol=lf
+*.zon text eol=lf
+*.lua text eol=lf
+*.sh text eol=lf
+Makefile text eol=lf
